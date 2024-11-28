@@ -1,0 +1,17 @@
+<!-- templates/registration/signup.html -->
+{% extends 'base.html' %}
+
+{% block title %}Registrarse | Club Colombiano de Juntas Directivas{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <h2>Registrarse</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-success">Registrarse</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

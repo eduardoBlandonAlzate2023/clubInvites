@@ -1,0 +1,18 @@
+<!-- main/templates/main/landing_page.html -->
+{% extends 'base.html' %}
+
+{% block title %}Bienvenido | Club Colombiano de Juntas Directivas{% endblock %}
+
+{% block content %}
+<div class="jumbotron text-center">
+    <h1 class="display-4">Bienvenido al Club Colombiano de Juntas Directivas</h1>
+    <p class="lead">
+        <strong>El Club Colombiano de Juntas Directivas</strong> es una agrupación de empresas emergentes con más potencial de crecimiento y desarrollo a nivel país, junto con el talento del 1% de empresarios en Colombia.
+    </p>
+    <hr class="my-4">
+    <p>
+        Queremos conectar a estos para potenciar el desarrollo y acelerar el crecimiento de estas pequeñas y medianas empresas con conocimiento que, de otra forma, sería imposible conseguir.
+    </p>
+    <a class="btn btn-primary btn-lg" href="{% url 'signup' %}" role="button">Únete Ahora</a>
+</div>
+{% endblock %}

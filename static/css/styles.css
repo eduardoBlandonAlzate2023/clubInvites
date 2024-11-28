@@ -1,0 +1,18 @@
+/* static/css/styles.css */
+
+body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+}
+
+h1, h2, h3 {
+    color: #333;
+}
+
+.navbar-brand {
+    font-weight: bold;
+}
+
+.jumbotron {
+    background-color: #f8f9fa;
+    padding: 2rem;
+}
