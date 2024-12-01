@@ -45,6 +45,7 @@
             {% for form in formset %}
                 <div class="competencia-form border rounded p-3 mb-3">
                     {{ form.id }}
+                    {{ form.DELETE.as_hidden }}
                     <div class="form-row align-items-center">
                         <div class="col-md-10">
                             {{ form.nombre.label_tag }}
@@ -54,10 +55,7 @@
                             {% endif %}
                         </div>
                         <div class="col-md-2 text-right">
-                            {% if form.can_delete %}
-                                {{ form.DELETE }}
-                                <button type="button" class="btn btn-danger remove-form">Eliminar</button>
-                            {% endif %}
+                            <button type="button" class="btn btn-danger remove-form">Eliminar</button>
                         </div>
                     </div>
                 </div>
@@ -89,7 +87,10 @@
         competenciaFormset.addEventListener('click', function(e) {
             if (e.target.classList.contains('remove-form')) {
                 let formDiv = e.target.closest('.competencia-form');
-                formDiv.querySelector('input[type="checkbox"]').checked = true; // Mark for deletion
+                let deleteField = formDiv.querySelector('input[type="hidden"][name$="-DELETE"]');
+                if (deleteField) {
+                    deleteField.value = 'on'; // Mark for deletion
+                }
                 formDiv.style.display = 'none';
             }
         });
@@ -103,13 +104,14 @@
 <!-- Hidden template for a new empty form -->
 <script type="text/template" id="empty_form">
     <div class="competencia-form border rounded p-3 mb-3">
+        {{ formset.empty_form.id }}
+        {{ formset.empty_form.DELETE.as_hidden }}
         <div class="form-row align-items-center">
             <div class="col-md-10">
                 {{ formset.empty_form.nombre.label_tag }}
                 {{ formset.empty_form.nombre }}
             </div>
             <div class="col-md-2 text-right">
-                {{ formset.empty_form.DELETE }}
                 <button type="button" class="btn btn-danger remove-form">Eliminar</button>
             </div>
         </div>
