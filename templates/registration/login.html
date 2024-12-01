@@ -1,4 +1,3 @@
-<!-- templates/registration/login.html -->
 {% extends 'base.html' %}
 
 {% block title %}Iniciar Sesión | Club Colombiano de Juntas Directivas{% endblock %}
@@ -9,8 +8,21 @@
         <h2>Iniciar Sesión</h2>
         <form method="post">
             {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
+            <div class="form-group">
+                {{ form.username.label_tag }}
+                {{ form.username }}
+                {% if form.username.errors %}
+                    <div class="alert alert-danger">{{ form.username.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.password.label_tag }}
+                {{ form.password }}
+                {% if form.password.errors %}
+                    <div class="alert alert-danger">{{ form.password.errors }}</div>
+                {% endif %}
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Iniciar Sesión</button>
         </form>
         <p class="mt-2">¿No tienes una cuenta? <a href="{% url 'signup' %}">Registrarse</a></p>
     </div>

@@ -1,12 +1,20 @@
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.views import LoginView
 from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
 
 from main.models import UserFormData
-from .forms import CustomUserCreationForm, UserForm, CompetenciaFormSet
+from .forms import CustomUserCreationForm, UserForm, CompetenciaFormSet, CustomAuthenticationForm
+
 
 def landing_page(request):
     return render(request, 'main/landing_page.html')
+
+
+class CustomLoginView(LoginView):
+    template_name = 'registration/login.html'
+    authentication_form = CustomAuthenticationForm
+
 
 def signup(request):
     if request.method == 'POST':
@@ -21,14 +29,14 @@ def signup(request):
             login(request, user)
             return redirect('form_page')
     else:
-        form = UserCreationForm()
+        form = CustomUserCreationForm()
     return render(request, 'registration/signup.html', {'form': form})
 
-@login_required
+
 @login_required
 def user_form(request):
     try:
-        user_form_data = request.user.userformdata
+        user_form_data = UserFormData.objects.get(user=request.user)
     except UserFormData.DoesNotExist:
         user_form_data = None
 
