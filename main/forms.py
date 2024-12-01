@@ -1,8 +1,10 @@
 # main/forms.py
 
 from django import forms
-from .models import UserFormData
-from django.forms import Textarea, TextInput, NumberInput, CheckboxInput
+from .models import Competencia, UserFormData
+from django.forms import Textarea, TextInput, NumberInput, CheckboxInput, PasswordInput, inlineformset_factory
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
 
 class UserForm(forms.ModelForm):
     class Meta:
@@ -15,14 +17,13 @@ class UserForm(forms.ModelForm):
             'ha_ocupado_posicion_ejecutiva',
             'anos_en_posicion_ejecutiva',
             'horas_mensuales_disponibles',
-            'competencias',
         ]
         labels = {
             'perfil_descripcion': 'Descripción de perfil',
             'empresas_y_logros': 'Empresas en las que ha trabajado y sus logros',
             'anos_experiencia_liderazgo': '¿Cuántos años de experiencia tiene en posiciones de liderazgo o dirección?',
             'numero_juntas_anteriores': '¿Cuántas juntas directivas ha integrado anteriormente?',
-            'ha_ocupado_posicion_ejecutiva': '¿Ha ocupado posiciones ejecutivas (CEO, CFO, COO, etc.)?',
+            'ha_ocupado_posicion_ejecutiva': '¿Ha ocupado posiciones ejecutivas?',
             'anos_en_posicion_ejecutiva': "Si respondió 'Sí', ¿cuánto tiempo ocupó esa posición? (Años)",
             'horas_mensuales_disponibles': '¿Cuántas horas mensuales puede dedicar al trabajo de la junta?',
             'competencias': 'Competencias de mayor conocimiento o experticia (tecnología, marketing, ventas, etc.)',
@@ -53,3 +54,42 @@ class UserForm(forms.ModelForm):
         elif not ha_ocupado:
             cleaned_data['anos_en_posicion_ejecutiva'] = None
         return cleaned_data
+
+class CustomUserCreationForm(UserCreationForm):
+    class Meta:
+        model = User
+        fields = ('username', 'password1', 'password2')
+        labels = {
+            'username': 'Nombre de usuario',
+            'password1': 'Contraseña',
+            'password2': 'Confirmar contraseña',
+        }
+        help_texts = {
+            'username': None,
+            'password1': None,
+            'password2': None,
+        }
+        widgets = {
+            'username': TextInput(attrs={'class': 'form-control'}),
+            'password1': PasswordInput(attrs={'class': 'form-control'}),
+            'password2': PasswordInput(attrs={'class': 'form-control'}),
+        }
+
+class CompetenciaForm(forms.ModelForm):
+    class Meta:
+        model = Competencia
+        fields = ['nombre']
+        labels = {
+            'nombre': 'Competencia',
+        }
+        widgets = {
+            'nombre': TextInput(attrs={'class': 'form-control'}),
+        }
+
+CompetenciaFormSet = inlineformset_factory(
+    UserFormData,
+    Competencia,
+    form=CompetenciaForm,
+    extra=1,
+    can_delete=True
+)

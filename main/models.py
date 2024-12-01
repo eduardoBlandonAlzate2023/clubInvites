@@ -24,7 +24,7 @@ class UserFormData(models.Model):
     
     # 5. Ha ocupado posiciones ejecutivas (CEO, CFO, COO, etc.)
     ha_ocupado_posicion_ejecutiva = models.BooleanField(
-        "¿Ha ocupado posiciones ejecutivas (CEO, CFO, COO, etc.)?", default=False
+        "¿Ha ocupado posiciones ejecutivas?", default=False
     )
     
     # Si respondió "Sí", ¿cuánto tiempo ocupó esa posición? (Años)
@@ -37,14 +37,17 @@ class UserFormData(models.Model):
         "¿Cuántas horas mensuales puede dedicar al trabajo de la junta?"
     )
     
-    # 7. Competencias de mayor conocimiento o experticia
-    competencias = models.CharField(
-        "Competencias de mayor conocimiento o experticia (tecnología, marketing, ventas, etc.)",
-        max_length=255
-    )
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     
     # Fecha de envío
     submitted_at = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
         return f"{self.user.username} - {self.perfil_descripcion[:30]}..."
+
+class Competencia(models.Model):
+    user_form_data = models.ForeignKey(UserFormData, on_delete=models.CASCADE, related_name='competencias')
+    nombre = models.CharField("Competencia", max_length=100)
+
+    def __str__(self):
+        return self.nombre

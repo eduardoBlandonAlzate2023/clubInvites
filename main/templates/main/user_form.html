@@ -4,41 +4,93 @@
 {% block title %}Completa el Formulario | Club Colombiano de Juntas Directivas{% endblock %}
 
 {% block content %}
-<h2>Completa el Formulario</h2>
-<form method="post">
-    {% csrf_token %}
-    {% for field in form %}
-        <div class="form-group">
-            {{ field.label_tag }}
-            {{ field }}
-            {% if field.help_text %}
-                <small class="form-text text-muted">{{ field.help_text }}</small>
+<div class="container mt-5">
+    <h2 class="mb-4">Completa el Formulario</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        {% for field in form %}
+            {% if field.field.widget.input_type == 'checkbox' %}
+                <div class="form-group form-check">
+                    {{ field }}
+                    <label class="form-check-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {% if field.help_text %}
+                        <small class="form-text text-muted">{{ field.help_text }}</small>
+                    {% endif %}
+                    {% if field.errors %}
+                        <div class="alert alert-danger">{{ field.errors }}</div>
+                    {% endif %}
+                </div>
+            {% else %}
+                <div class="form-group">
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {% if field.help_text %}
+                        <small class="form-text text-muted">{{ field.help_text }}</small>
+                    {% endif %}
+                    {% if field.errors %}
+                        <div class="alert alert-danger">{{ field.errors }}</div>
+                    {% endif %}
+                </div>
             {% endif %}
-            {% if field.errors %}
-                <div class="alert alert-danger">{{ field.errors }}</div>
+        {% endfor %}
+
+        <h3>Competencias</h3>
+{{ formset.management_form }}
+<div id="competencia_formset">
+    {% for form in formset %}
+        <div class="form-inline mb-2 competencia-form">
+            {{ form.id }}
+            <div class="form-group mr-2">
+                {{ form.nombre }}
+            </div>
+            {% if form.can_delete %}
+                <button type="button" class="btn btn-danger btn-sm remove-form">Eliminar</button>
             {% endif %}
         </div>
     {% endfor %}
-    <button type="submit" class="btn btn-success">Enviar</button>
-</form>
+</div>
+<button type="button" class="btn btn-secondary" id="add-form">Agregar Competencia</button>
+
+        <button type="submit" class="btn btn-success mt-3">Enviar</button>
+    </form>
+</div>
 {% endblock %}
 
 {% block scripts %}
 {{ block.super }}
 <script>
-$(document).ready(function(){
-    function toggleAnosEjecutiva() {
-        if ($('#id_ha_ocupado_posicion_ejecutiva').is(':checked')) {
-            $('#div_id_anos_en_posicion_ejecutiva').show();
-        } else {
-            $('#div_id_anos_en_posicion_ejecutiva').hide();
-            $('#id_anos_en_posicion_ejecutiva').val('');
-        }
-    }
-    toggleAnosEjecutiva();
-    $('#id_ha_ocupado_posicion_ejecutiva').change(function(){
-        toggleAnosEjecutiva();
+    $(document).ready(function () {
+        let formIdx = {{ formset.total_form_count }};
+        $('#add-form').click(function () {
+            let formHtml = $('#empty_form').html().replace(/__prefix__/g, formIdx);
+            $('#competencia_formset').append(formHtml);
+            formIdx++;
+        });
+    
+        $(document).on('click', '.remove-form', function () {
+            $(this).closest('.competencia-form').remove();
+        });
     });
-});
+    </script>
+    
+    <!-- Hidden template for a new empty form -->
+    <script type="text/template" id="empty_form">
+        <div class="form-inline mb-2 competencia-form">
+            {{ formset.empty_form.id }}
+            <div class="form-group mr-2">
+                {{ formset.empty_form.nombre }}
+            </div>
+            <button type="button" class="btn btn-danger btn-sm remove-form">Eliminar</button>
+        </div>
+    </script>
+
+<!-- Formulario vacío para clonar -->
+<script type="text/template" id="empty_form">
+    <div class="form-inline mb-2 competencia-form">
+        {{ formset.empty_form.id }}
+        {{ formset.empty_form.nombre }}
+        <button type="button" class="btn btn-danger btn-sm remove-form">Eliminar</button>
+    </div>
 </script>
 {% endblock %}

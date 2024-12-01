@@ -4,13 +4,21 @@
 {% block title %}Registrarse | Club Colombiano de Juntas Directivas{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
+<div class="row justify-content-center mt-5">
     <div class="col-md-6">
-        <h2>Registrarse</h2>
+        <h2 class="mb-4 text-center">Registrarse</h2>
         <form method="post">
             {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn btn-success">Registrarse</button>
+            {% for field in form %}
+                <div class="form-group">
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {% if field.errors %}
+                        <div class="text-danger">{{ field.errors }}</div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-success btn-block">Registrarse</button>
         </form>
     </div>
 </div>

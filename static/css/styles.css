@@ -16,3 +16,19 @@ h1, h2, h3 {
     background-color: #f8f9fa;
     padding: 2rem;
 }
+
+@media (max-width: 576px) {
+    .display-4 {
+        font-size: 2.5rem;
+    }
+}
+
+.lead {
+    font-size: 1.25rem;
+}
+
+@media (max-width: 576px) {
+    .lead {
+        font-size: 1rem;
+    }
+}
