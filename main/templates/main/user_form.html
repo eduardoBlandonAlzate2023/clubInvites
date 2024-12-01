@@ -5,10 +5,12 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h2 class="mb-4">Completa el Formulario</h2>
+    <h2 class="mb-4 text-center">Completa el Formulario</h2>
     <form method="post">
         {% csrf_token %}
         {{ form.non_field_errors }}
+
+        <!-- Main Form Fields -->
         {% for field in form %}
             {% if field.field.widget.input_type == 'checkbox' %}
                 <div class="form-group form-check">
@@ -18,7 +20,7 @@
                         <small class="form-text text-muted">{{ field.help_text }}</small>
                     {% endif %}
                     {% if field.errors %}
-                        <div class="alert alert-danger">{{ field.errors }}</div>
+                        <div class="text-danger">{{ field.errors }}</div>
                     {% endif %}
                 </div>
             {% else %}
@@ -29,30 +31,41 @@
                         <small class="form-text text-muted">{{ field.help_text }}</small>
                     {% endif %}
                     {% if field.errors %}
-                        <div class="alert alert-danger">{{ field.errors }}</div>
+                        <div class="text-danger">{{ field.errors }}</div>
                     {% endif %}
                 </div>
             {% endif %}
         {% endfor %}
 
-        <h3>Competencias</h3>
-{{ formset.management_form }}
-<div id="competencia_formset">
-    {% for form in formset %}
-        <div class="form-inline mb-2 competencia-form">
-            {{ form.id }}
-            <div class="form-group mr-2">
-                {{ form.nombre }}
-            </div>
-            {% if form.can_delete %}
-                <button type="button" class="btn btn-danger btn-sm remove-form">Eliminar</button>
-            {% endif %}
+        <!-- Competencias Section -->
+        <h3 class="mt-5">Competencias</h3>
+        <p>Agrega tus competencias relevantes:</p>
+        <div id="competencia_formset">
+            {{ formset.management_form }}
+            {% for form in formset %}
+                <div class="competencia-form border rounded p-3 mb-3">
+                    {{ form.id }}
+                    <div class="form-row align-items-center">
+                        <div class="col-md-10">
+                            {{ form.nombre.label_tag }}
+                            {{ form.nombre }}
+                            {% if form.nombre.errors %}
+                                <div class="text-danger">{{ form.nombre.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-2 text-right">
+                            {% if form.can_delete %}
+                                {{ form.DELETE }}
+                                <button type="button" class="btn btn-danger remove-form">Eliminar</button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
         </div>
-    {% endfor %}
-</div>
-<button type="button" class="btn btn-secondary" id="add-form">Agregar Competencia</button>
+        <button type="button" class="btn btn-primary mt-2" id="add-form">Agregar Competencia</button>
 
-        <button type="submit" class="btn btn-success mt-3">Enviar</button>
+        <button type="submit" class="btn btn-success btn-block mt-4">Enviar</button>
     </form>
 </div>
 {% endblock %}
@@ -60,37 +73,46 @@
 {% block scripts %}
 {{ block.super }}
 <script>
-    $(document).ready(function () {
+    document.addEventListener('DOMContentLoaded', function() {
         let formIdx = {{ formset.total_form_count }};
-        $('#add-form').click(function () {
-            let formHtml = $('#empty_form').html().replace(/__prefix__/g, formIdx);
-            $('#competencia_formset').append(formHtml);
+        const competenciaFormset = document.getElementById('competencia_formset');
+        const addFormBtn = document.getElementById('add-form');
+
+        addFormBtn.addEventListener('click', function() {
+            let newForm = document.createElement('div');
+            newForm.innerHTML = document.getElementById('empty_form').innerHTML.replace(/__prefix__/g, formIdx);
+            competenciaFormset.appendChild(newForm);
             formIdx++;
+            updateTotalForms();
         });
-    
-        $(document).on('click', '.remove-form', function () {
-            $(this).closest('.competencia-form').remove();
+
+        competenciaFormset.addEventListener('click', function(e) {
+            if (e.target.classList.contains('remove-form')) {
+                let formDiv = e.target.closest('.competencia-form');
+                formDiv.querySelector('input[type="checkbox"]').checked = true; // Mark for deletion
+                formDiv.style.display = 'none';
+            }
         });
+
+        function updateTotalForms() {
+            document.getElementById('id_competencia_set-TOTAL_FORMS').value = formIdx;
+        }
     });
-    </script>
-    
-    <!-- Hidden template for a new empty form -->
-    <script type="text/template" id="empty_form">
-        <div class="form-inline mb-2 competencia-form">
-            {{ formset.empty_form.id }}
-            <div class="form-group mr-2">
+</script>
+
+<!-- Hidden template for a new empty form -->
+<script type="text/template" id="empty_form">
+    <div class="competencia-form border rounded p-3 mb-3">
+        <div class="form-row align-items-center">
+            <div class="col-md-10">
+                {{ formset.empty_form.nombre.label_tag }}
                 {{ formset.empty_form.nombre }}
             </div>
-            <button type="button" class="btn btn-danger btn-sm remove-form">Eliminar</button>
+            <div class="col-md-2 text-right">
+                {{ formset.empty_form.DELETE }}
+                <button type="button" class="btn btn-danger remove-form">Eliminar</button>
+            </div>
         </div>
-    </script>
-
-<!-- Formulario vacío para clonar -->
-<script type="text/template" id="empty_form">
-    <div class="form-inline mb-2 competencia-form">
-        {{ formset.empty_form.id }}
-        {{ formset.empty_form.nombre }}
-        <button type="button" class="btn btn-danger btn-sm remove-form">Eliminar</button>
     </div>
 </script>
 {% endblock %}

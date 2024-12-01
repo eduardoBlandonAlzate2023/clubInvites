@@ -38,19 +38,24 @@ class UserForm(forms.ModelForm):
 
 
 class CustomUserCreationForm(UserCreationForm):
+    username = forms.CharField(
+        label='Nombre de usuario',
+        widget=forms.TextInput(attrs={'class': 'form-control'}),
+    )
+    password1 = forms.CharField(
+        label='Contraseña',
+        widget=forms.PasswordInput(attrs={'class': 'form-control'}),
+        help_text='',
+    )
+    password2 = forms.CharField(
+        label='Confirmar contraseña',
+        widget=forms.PasswordInput(attrs={'class': 'form-control'}),
+        help_text='',
+    )
+
     class Meta:
         model = User
         fields = ('username', 'password1', 'password2')
-        labels = {
-            'username': 'Nombre de usuario',
-            'password1': 'Contraseña',
-            'password2': 'Confirmar contraseña',
-        }
-        widgets = {
-            'username': TextInput(attrs={'class': 'form-control'}),
-            'password1': PasswordInput(attrs={'class': 'form-control'}),
-            'password2': PasswordInput(attrs={'class': 'form-control'}),
-        }
 
 
 class CustomAuthenticationForm(AuthenticationForm):
@@ -68,8 +73,11 @@ class CompetenciaForm(forms.ModelForm):
     class Meta:
         model = Competencia
         fields = ['nombre']
+        labels = {
+            'nombre': 'Nombre de la Competencia',
+        }
         widgets = {
-            'nombre': TextInput(attrs={'class': 'form-control'}),
+            'nombre': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej. Liderazgo'}),
         }
 
 
